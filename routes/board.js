@@ -101,7 +101,7 @@ router.get('/update', function(req, res, next) {
     pool.getConnection(function(err, connection) {
         if(err) console.error("커넥션 객체 얻어오기 에러 : " + err);
 
-        var sql = "SELECT idx, creator_id, title, content, hit FROM board WHERE idx=?";
+        var sql = "SELECT idx, creator_id, title, content, hit, image FROM board WHERE idx=?";
         connection.query(sql, [idx], function(err, rows) {
             if(err) console.error(err);
             console.log("update에서 1개의 글 조회 결과 확인 : ", rows);
@@ -112,17 +112,20 @@ router.get('/update', function(req, res, next) {
 });
 
 // 글 수정 로직 처리 POST
-router.post('/update', function(req, res, next) {
+router.post('/update', upload.single('image'), function(req, res, next) {
     var idx = req.body.idx;
+    console.log("update post idx : " + idx);
     var creator_id = req.body.creator_id;
     var title = req.body.title;
     var content = req.body.content;
     var passwd = req.body.passwd;
-    var datas = [creator_id, title, content, idx, passwd];
+    var image = `/images/${req.file.filename}`;   // image 경로 만들기
+    console.log("update image path : " + image);
+    var datas = [creator_id, title, content, image, idx, passwd];
 
     pool.getConnection(function(err, connection) {
-        var sql = "UPDATE board SET creator_id=?, title=?, content=? WHERE idx=? AND passwd=?";
-        connection.query(sql, [creator_id, title, content, idx, passwd], function(err, result) {
+        var sql = "UPDATE board SET creator_id=?, title=?, content=?, image=? WHERE idx=? AND passwd=?";
+        connection.query(sql, datas, function(err, result) {
             console.log(result);
             if(err) console.error("글 수정 중 에러 발생 : " + err);
 

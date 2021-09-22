@@ -7,7 +7,7 @@
     </head>
     <body>
         <h1><%= title %></h1>
-        <form action="/board/update" method="post" onsubmit="onWriteSubmit()">
+        <form action="/board/update" method="post" enctype="multipart/form-data" onsubmit="onWriteSubmit()">
             <table border="1">
                 <input type="hidden" name="idx" value="<%=row.idx%>" />
                 <tr>
@@ -21,6 +21,10 @@
                 <tr>
                     <td>내용</td>
                     <td><textarea type="content" name="content" id="content" cols="30" rows="10" required></textarea></td>
+                </tr>
+                <tr>
+                    <td>이미지</td>
+                    <td><input type="file" name="image" value="파일 선택" /></td>
                 </tr>
                 <tr>
                     <td>패스워드</td>
