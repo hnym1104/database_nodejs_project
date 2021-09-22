@@ -1,5 +1,20 @@
 var express = require('express');
 var router = express.Router();
+var multer = require('multer');
+var path = require('path');
+
+//img upload
+var storage = multer.diskStorage({
+    destination: function(req, file, callback) {
+        callback(null, 'public/images');
+    },
+    filename: function(req, file, callback) {
+        const ext = path.extname(file.originalname);
+        callback(null, path.basename(file.originalname, ext) + ext);
+    },
+});   
+
+var upload = multer({storage: storage});
 
 //mysql loading
 var mysql = require('mysql');
@@ -40,16 +55,17 @@ router.get('/write', function(req, res, next) {
 });
 
 // 글 쓰기 로직 처리 POST
-router.post('/write', function(req, res, next) {
+router.post('/write', upload.single('image'), function(req, res, next) {
     var creator_id = req.body.creator_id;
     var title = req.body.title;
     var content = req.body.content;
     var passwd = req.body.passwd;
-    var datas = [creator_id, title, content, passwd];
+    var image = `/images/${req.file.filename}`;   // image 경로 만들기
+    var datas = [creator_id, title, content, passwd, image];
 
     pool.getConnection(function(err, connection) {
         // Use the connection
-        var sqlForInsertBoard = "INSERT INTO board(creator_id, title, content, passwd) values (?, ?, ?, ?)";
+        var sqlForInsertBoard = "INSERT INTO board(creator_id, title, content, passwd, image) values (?, ?, ?, ?, ?)";
         connection.query(sqlForInsertBoard, datas, function(err, rows) {
             if (err) console.error("err : " + err);
             console.log("rows : " + JSON.stringify(rows));
@@ -67,7 +83,7 @@ router.get('/read/:idx', function(req, res, next) {
     var idx = req.params.idx;
 
     pool.getConnection(function(err, connection) {
-        var sql = "SELECT idx, creator_id, title, content, hit FROM board WHERE idx=?";
+        var sql = "SELECT idx, creator_id, title, content, hit, image FROM board WHERE idx=?";
 
         connection.query(sql, [idx], function(err, row) {
             if(err) console.error("err : " + err);
