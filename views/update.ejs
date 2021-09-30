@@ -12,15 +12,15 @@
                 <input type="hidden" name="idx" value="<%=row.idx%>" />
                 <tr>
                     <td>작성자</td>
-                    <td><input type="text" name="creator_id" id="creator_id" required></td>
+                    <td><input type="text" name="creator_id" id="creator_id" value="<%=row.creator_id%>" required></td>
                 </tr>
                 <tr>
                     <td>제목</td>
-                    <td><input type="text" name="title" id="title" required></td>
+                    <td><input type="text" name="title" id="title" value="<%=row.title%>" required></td>
                 </tr>
                 <tr>
                     <td>내용</td>
-                    <td><textarea type="content" name="content" id="content" cols="30" rows="10" required></textarea></td>
+                    <td><textarea type="content" name="content" id="content" cols="30" rows="10" required><%=row.content%></textarea></td>
                 </tr>
                 <tr>
                     <td>이미지</td>
